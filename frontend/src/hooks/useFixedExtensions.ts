@@ -11,6 +11,7 @@ export function useFixedExtensions() {
   );
   const [isLoading, setIsLoading] = useState(() => readCache<FixedExtension[]>(CACHE_KEY) === null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingNames, setPendingNames] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let alive = true;
@@ -30,22 +31,24 @@ export function useFixedExtensions() {
 
   const toggle = useCallback(async (name: string, checked: boolean) => {
     setError(null);
-    setFixedExtensions((prev) => {
-      const next = prev.map((item) => (item.name === name ? { ...item, checked } : item));
-      writeCache(CACHE_KEY, next);
-      return next;
-    });
+    setPendingNames((prev) => new Set(prev).add(name));
     try {
       await extensionApi.updateFixedExtension(name, checked);
-    } catch (e) {
       setFixedExtensions((prev) => {
-        const next = prev.map((item) => (item.name === name ? { ...item, checked: !checked } : item));
+        const next = prev.map((item) => (item.name === name ? { ...item, checked } : item));
         writeCache(CACHE_KEY, next);
         return next;
       });
+    } catch (e) {
       setError(e instanceof Error ? e.message : '저장에 실패했어요. 다시 시도해 주세요.');
+    } finally {
+      setPendingNames((prev) => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
     }
   }, []);
 
-  return { fixedExtensions, isLoading, error, toggle };
+  return { fixedExtensions, isLoading, error, toggle, pendingNames };
 }

@@ -11,6 +11,7 @@ export function useCustomExtensions() {
   );
   const [isLoading, setIsLoading] = useState(() => readCache<CustomExtension[]>(CACHE_KEY) === null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingIds, setPendingIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let alive = true;
@@ -46,20 +47,24 @@ export function useCustomExtensions() {
 
   const remove = useCallback(async (id: number) => {
     setError(null);
-    const snapshot = customExtensions;
-    setCustomExtensions((prev) => {
-      const next = prev.filter((item) => item.id !== id);
-      writeCache(CACHE_KEY, next);
-      return next;
-    });
+    setPendingIds((prev) => new Set(prev).add(id));
     try {
       await extensionApi.deleteCustomExtension(id);
+      setCustomExtensions((prev) => {
+        const next = prev.filter((item) => item.id !== id);
+        writeCache(CACHE_KEY, next);
+        return next;
+      });
     } catch (e) {
-      setCustomExtensions(snapshot);
-      writeCache(CACHE_KEY, snapshot);
       setError(e instanceof Error ? e.message : '삭제에 실패했어요. 다시 시도해 주세요.');
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
-  }, [customExtensions]);
+  }, []);
 
-  return { customExtensions, isLoading, error, add, remove };
+  return { customExtensions, isLoading, error, add, remove, pendingIds };
 }

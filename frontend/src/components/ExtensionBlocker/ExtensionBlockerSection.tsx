@@ -32,7 +32,11 @@ export function ExtensionBlockerSection() {
         {fixed.isLoading ? (
           <span className="status-text">불러오는 중...</span>
         ) : (
-          <FixedExtensionList extensions={fixed.fixedExtensions} onToggle={fixed.toggle} />
+          <FixedExtensionList
+            extensions={fixed.fixedExtensions}
+            onToggle={fixed.toggle}
+            pendingNames={fixed.pendingNames}
+          />
         )}
       </div>
 
@@ -48,6 +52,7 @@ export function ExtensionBlockerSection() {
             <CustomExtensionTagList
               extensions={custom.customExtensions}
               onRemove={custom.remove}
+              pendingIds={custom.pendingIds}
             />
           )}
           {serverError && (
