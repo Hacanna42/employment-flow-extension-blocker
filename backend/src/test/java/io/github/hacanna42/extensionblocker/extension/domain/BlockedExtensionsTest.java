@@ -95,6 +95,17 @@ class BlockedExtensionsTest {
         }
 
         @Test
+        @DisplayName("아직 체크되지 않은 고정 확장자 이름이어도 커스텀으로는 추가할 수 없다")
+        void rejectsUncheckedFixedExtensionName() {
+            // given: exe는 아직 체크되지 않아 저장된 행이 하나도 없는 상태
+            BlockedExtensions blocked = blockedExtensionsOf();
+
+            // when & then
+            assertThatThrownBy(() -> blocked.assertCanAdd(ExtensionName.from("exe")))
+                    .isInstanceOf(DuplicateExtensionException.class);
+        }
+
+        @Test
         @DisplayName("이미 체크된 고정 확장자와 같은 이름이면 예외가 발생한다")
         void rejectsNameCollidingWithFixedExtension() {
             // given

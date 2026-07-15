@@ -23,8 +23,15 @@ public class BlockedExtensions {
     }
 
     public void assertCanAdd(ExtensionName extensionName) {
+        assertNotFixed(extensionName);
         assertNotAlreadyBlocked(extensionName);
         assertCustomCapacityAvailable();
+    }
+
+    private void assertNotFixed(ExtensionName extensionName) {
+        if (extensionName.isFixed()) {
+            throw new DuplicateExtensionException(extensionName);
+        }
     }
 
     private void assertNotAlreadyBlocked(ExtensionName extensionName) {

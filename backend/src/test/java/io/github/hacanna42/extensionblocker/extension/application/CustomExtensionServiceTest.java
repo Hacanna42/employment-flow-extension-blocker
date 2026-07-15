@@ -92,6 +92,19 @@ class CustomExtensionServiceTest {
         }
 
         @Test
+        @DisplayName("아직 체크되지 않은 고정 확장자 이름이면 예외가 발생하고 저장하지 않는다")
+        void rejectsUncheckedFixedExtensionNameWithoutSaving() {
+            // given: exe는 아직 체크되지 않아 저장된 행이 하나도 없는 상태
+            given(spaceIdProvider.currentSpaceId()).willReturn(SPACE_ID);
+            given(repository.findAllBySpaceId(SPACE_ID)).willReturn(List.of());
+
+            // when & then
+            assertThatThrownBy(() -> service.add("exe"))
+                    .isInstanceOf(DuplicateExtensionException.class);
+            verify(repository, never()).save(any());
+        }
+
+        @Test
         @DisplayName("이미 차단된 이름이면 예외가 발생하고 저장하지 않는다")
         void rejectsDuplicateNameWithoutSaving() {
             // given
