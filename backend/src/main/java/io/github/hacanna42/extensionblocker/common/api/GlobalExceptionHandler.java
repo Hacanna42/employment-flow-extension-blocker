@@ -4,6 +4,7 @@ import io.github.hacanna42.extensionblocker.extension.exception.CustomExtensionL
 import io.github.hacanna42.extensionblocker.extension.exception.DuplicateExtensionException;
 import io.github.hacanna42.extensionblocker.extension.exception.ExtensionNotFoundException;
 import io.github.hacanna42.extensionblocker.extension.exception.InvalidExtensionNameException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -53,6 +55,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> respond(HttpStatus status, String message) {
+        log.warn("{} - {}", status, message);
         return ResponseEntity.status(status).body(new ErrorResponse(message));
     }
 }

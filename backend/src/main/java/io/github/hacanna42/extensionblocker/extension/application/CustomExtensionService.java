@@ -9,9 +9,11 @@ import io.github.hacanna42.extensionblocker.extension.domain.ExtensionName;
 import io.github.hacanna42.extensionblocker.extension.domain.SpaceId;
 import io.github.hacanna42.extensionblocker.extension.exception.ExtensionNotFoundException;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class CustomExtensionService {
 
@@ -38,6 +40,7 @@ public class CustomExtensionService {
         BlockedExtensions blocked = new BlockedExtensions(repository.findAllBySpaceId(spaceId));
         blocked.assertCanAdd(extensionName);
         BlockedExtension saved = repository.save(new BlockedExtension(spaceId, extensionName));
+        log.info("커스텀 확장자 추가: space={} id={} name={}", spaceId.value(), saved.id(), extensionName.value());
         return CustomExtensionResponse.from(saved);
     }
 
@@ -46,6 +49,7 @@ public class CustomExtensionService {
         SpaceId spaceId = spaceIdProvider.currentSpaceId();
         BlockedExtension target = findRemovableCustomExtension(spaceId, id);
         repository.delete(target);
+        log.info("커스텀 확장자 삭제: space={} id={} name={}", spaceId.value(), id, target.extensionName().value());
     }
 
     private BlockedExtension findRemovableCustomExtension(SpaceId spaceId, Long id) {

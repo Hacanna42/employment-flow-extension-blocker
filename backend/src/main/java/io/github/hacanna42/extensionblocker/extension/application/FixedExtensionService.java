@@ -9,9 +9,11 @@ import io.github.hacanna42.extensionblocker.extension.domain.SpaceId;
 import io.github.hacanna42.extensionblocker.extension.exception.ExtensionNotFoundException;
 import java.time.Instant;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class FixedExtensionService {
 
@@ -37,6 +39,7 @@ public class FixedExtensionService {
         ExtensionName extensionName = assertKnownFixedName(rawName);
         SpaceId spaceId = spaceIdProvider.currentSpaceId();
         applyChecked(spaceId, extensionName, checked);
+        log.info("고정 확장자 변경: space={} name={} checked={}", spaceId.value(), extensionName.value(), checked);
         return new FixedExtensionResponse(extensionName.value(), checked);
     }
 
