@@ -1,13 +1,13 @@
 package io.github.hacanna42.extensionblocker.extension.application;
 
 import io.github.hacanna42.extensionblocker.extension.api.dto.FixedExtensionResponse;
-import io.github.hacanna42.extensionblocker.extension.domain.BlockedExtension;
 import io.github.hacanna42.extensionblocker.extension.domain.BlockedExtensionRepository;
 import io.github.hacanna42.extensionblocker.extension.domain.BlockedExtensions;
 import io.github.hacanna42.extensionblocker.extension.domain.ExtensionName;
 import io.github.hacanna42.extensionblocker.extension.domain.FixedExtensionNames;
 import io.github.hacanna42.extensionblocker.extension.domain.SpaceId;
 import io.github.hacanna42.extensionblocker.extension.exception.ExtensionNotFoundException;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,10 +57,7 @@ public class FixedExtensionService {
     }
 
     private void checkOn(SpaceId spaceId, ExtensionName extensionName) {
-        if (repository.existsBySpaceIdAndExtensionName(spaceId, extensionName)) {
-            return;
-        }
-        repository.save(new BlockedExtension(spaceId, extensionName));
+        repository.insertIfAbsent(spaceId.value(), extensionName.value(), Instant.now());
     }
 
     private void checkOff(SpaceId spaceId, ExtensionName extensionName) {

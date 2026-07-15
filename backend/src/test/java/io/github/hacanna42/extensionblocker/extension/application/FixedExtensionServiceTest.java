@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import io.github.hacanna42.extensionblocker.extension.api.dto.FixedExtensionResponse;
@@ -14,13 +13,13 @@ import io.github.hacanna42.extensionblocker.extension.domain.BlockedExtensionRep
 import io.github.hacanna42.extensionblocker.extension.domain.ExtensionName;
 import io.github.hacanna42.extensionblocker.extension.domain.SpaceId;
 import io.github.hacanna42.extensionblocker.extension.exception.ExtensionNotFoundException;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -89,33 +88,16 @@ class FixedExtensionServiceTest {
     class UpdateChecked {
 
         @Test
-        @DisplayName("체크되지 않은 확장자를 체크하면 새로 저장한다")
-        void savesWhenCheckingUnstoredExtension() {
+        @DisplayName("체크하면 멱등 insert(ON CONFLICT DO NOTHING)를 호출한다")
+        void insertsIdempotentlyWhenChecking() {
             // given
             given(spaceIdProvider.currentSpaceId()).willReturn(SPACE_ID);
-            given(repository.existsBySpaceIdAndExtensionName(eq(SPACE_ID), any())).willReturn(false);
 
             // when
             service.updateChecked("exe", true);
 
             // then
-            ArgumentCaptor<BlockedExtension> captor = ArgumentCaptor.forClass(BlockedExtension.class);
-            verify(repository).save(captor.capture());
-            assertThat(captor.getValue().isNamed(ExtensionName.from("exe"))).isTrue();
-        }
-
-        @Test
-        @DisplayName("이미 체크된 확장자를 다시 체크해도 중복 저장하지 않는다")
-        void doesNotDuplicateWhenAlreadyChecked() {
-            // given
-            given(spaceIdProvider.currentSpaceId()).willReturn(SPACE_ID);
-            given(repository.existsBySpaceIdAndExtensionName(eq(SPACE_ID), any())).willReturn(true);
-
-            // when
-            service.updateChecked("exe", true);
-
-            // then
-            verify(repository, never()).save(any());
+            verify(repository).insertIfAbsent(eq(SPACE_ID.value().longValue()), eq("exe"), any(Instant.class));
         }
 
         @Test

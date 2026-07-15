@@ -3,6 +3,7 @@ package io.github.hacanna42.extensionblocker.extension.domain;
 import io.github.hacanna42.extensionblocker.extension.exception.InvalidExtensionNameException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Embeddable
@@ -20,7 +21,7 @@ public record ExtensionName(@Column(name = "name", nullable = false, length = 20
     }
 
     private static String normalize(String rawValue) {
-        return rawValue.trim().toLowerCase().replaceFirst("^\\.+", "");
+        return rawValue.trim().toLowerCase(Locale.ROOT).replaceFirst("^\\.+", "");
     }
 
     private static void assertValidFormat(String candidate) {
