@@ -1,0 +1,4 @@
+export const CUSTOM_EXTENSION_MAX_LENGTH = 20;
+export const CUSTOM_EXTENSION_MAX_COUNT = 200;
+
+export const EXTENSION_NAME_PATTERN = /^[a-z0-9]{1,20}$/;

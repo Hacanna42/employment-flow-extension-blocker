@@ -1,0 +1,52 @@
+:root {
+  --color-primary: #6449fc;
+  --color-primary-hover: #5238e0;
+  --color-primary-soft: #f1eeff;
+  --color-primary-border: #d6cdfd;
+
+  --color-text: #333333;
+  --color-text-sub: #767a83;
+  --color-text-placeholder: #b0b3ba;
+  --color-border: #e3e4e8;
+  --color-bg-page: #f7f7fa;
+  --color-bg-card: #ffffff;
+  --color-bg-muted: #fafafb;
+
+  --color-danger: #e5484d;
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 3px rgba(20, 16, 60, 0.06), 0 4px 16px rgba(20, 16, 60, 0.04);
+
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI',
+    'Malgun Gothic', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
