@@ -9,18 +9,8 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: true
   flyway:
     enabled: true
 
 server:
   port: 8080
-
-logging:
-  level:
-    io.github.hacanna42.extensionblocker: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.springframework.web: DEBUG
