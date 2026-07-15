@@ -71,3 +71,6 @@ service-account*.json
 
 # Build output
 build/
+
+# Personal notes
+/ignore/
